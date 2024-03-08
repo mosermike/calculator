@@ -20,18 +20,6 @@
 #include "../include/standards.hpp"
 
 
-template <typename T> void math::cout (std::vector<T> const& vec){
-	for(uint32_t i = 0; i < vec.size(); i++)
-		std::cout << vec[i] << std::endl;    //Ausgabe aller Werte
-	}
-template void math::cout<int> (std::vector<int> const& vec);
-template void math::cout<double> (std::vector<double> const& vec);
-template void math::cout<float> (std::vector<float> const& vec);
-template void math::cout<uint32_t> (std::vector<uint32_t> const& vec);
-template void math::cout<uint64_t> (std::vector<uint64_t> const& vec);
-template void math::cout<math::string> (std::vector<math::string> const& vec);
-template void math::cout<std::string> (std::vector<std::string> const& vec);
-
 // Uhrzeit:
 uint32_t math::date(int info, time_t time1){
 	
@@ -106,13 +94,4 @@ bool math::range(std::size_t number) {
 
 bool math::range(std::size_t number1, std::size_t number2) {
 	return range(number1) || range(number2);
-}
-
-double math::round(double number, uint16_t digit) {
-    double temp = number*std::pow(10,digit);
-    int64_t temp1 = (int) (number*(std::pow(10,digit+1)));
-    if (temp1 % 10 > 4)
-        return (double) (((int) (temp+1.0))/std::pow(10,digit));
-    else
-        return ((int) temp)/std::pow(10,digit);
 }
