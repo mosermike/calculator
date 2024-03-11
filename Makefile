@@ -9,7 +9,7 @@ PROJECT = calc
 
 GCC = /usr/bin/g++
 
-CFLAGS += -Wall -O2 -pipe -Weffc++ -flto=4 -std=c++20
+CFLAGS += -Wall -O2 -pipe -Weffc++ -flto=4 -std=c++17
 CFLAGS_GDB = -Wall -Weffc++ -O0 -ggdb #-Werror
 
 INCLUDE += -I./include -I./src #-I./math -I./math1
