@@ -33,7 +33,7 @@
 		
 		if(math::Unix::exist(logpath.str() + ".bak5"))
 			std::remove((logpath + ".bak5").c_str());
-
+		#if __cplusplus >= 202002L
 		// Execute backup
 		for(int32_t i = 4; i >= 0; i--) {
 			// NOTE 0 is for logpath.bak and logpath.bak1
@@ -48,6 +48,9 @@
 		}
 		if(verbose)
 			std::cout << std::endl;
+		#else
+		std::cout << "[math::log::backup] Backup not possible due to missing c++ standard of c++20 or higher!" << std::endl;
+		#endif
 		
 		// Reset first file to have a new file if wished
 		if(Reset)

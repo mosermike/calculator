@@ -16,15 +16,15 @@ void math::help::header(std::string befehl, std::string option) {
 	math::shell::chapter("NAME",true);
 	std::cout << "\t" << "calc" << " - " << befehl << std::endl;
 	math::shell::letter("white");
-	math::shell::chapter("AUFRUF",true);
+	math::shell::chapter("CALL",true);
 	math::shell::chapter("\tcalc",false);
 	std::cout << option << " [OPTION]" << std::endl;
-	math::shell::chapter("BESCHREIBUNG",true);
+	math::shell::chapter("DESCRIPTION",true);
 }
 
 void math::help::foot() {
 	
-	math::shell::chapter("AUTOR",true);
+	math::shell::chapter("AUTHOR",true);
 	std::cout << "Written from Mike Moser" << std::endl << std::endl;
 	std::cout << "Version: " << 1.0 << "\t\t\t\t\t\t" << "March" << " " << 2024 << std::endl;
 }
@@ -34,7 +34,7 @@ void math::help::rechner() {
 
 	//math::help::status("rechner");
 
-	header("Führt verschiedene Berechungen durch.");
+	header("Performs different calculations.");
 	
 	std::cout << "\tThis program performs different calculations depending on the given arguments." << std::endl;
 	std::cout << "\tNecessary arguments for long options are also needed for short options.." << std::endl;
@@ -84,7 +84,7 @@ void math::help::rechner() {
 	math::shell::chapter("Optionen bei --calculations:",true);
 	math::shell::option("rx", "Verwendung des Ergebnisses von Gleichung x, rx wird in der neuen Gleichung ersetzt");
 	std::cout << std::endl;
-	math::shell::chapter("Sonstiges:", true);
+	math::shell::chapter("Misc.:", true);
 	std::cout << "\tVorhandene Konstanten: pi, exp,E , P_c, P_k, P_m, P_e, P_G, P_h, P_µ, P_NA, P_u" << std::endl;
 	std::cout << "\tVorhandene Potenzen:   p, n, µ, m, k, M, G, T oder mit e" << std::endl << std::endl;
 		
