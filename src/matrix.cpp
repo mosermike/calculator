@@ -2,7 +2,6 @@
 #include "../include/matrix.hpp"
 #include "../include/logging.hpp"
 
-
 math::string math::rechner::matrix_calculation(math::shell::arg args, math::string matrix) {
 	
 	std::size_t		pos		= 0;
@@ -398,7 +397,7 @@ double math::rechner::matrix_determinante(math::string matrix, const bool ausgab
 	std::size_t temp2 = 0;
 	math::string temp = "";
 	std::string	ergebnis = "";
-	
+
 	// =============================
 	// Größe der Matrix bestimmen:
 	// =============================
@@ -417,6 +416,8 @@ double math::rechner::matrix_determinante(math::string matrix, const bool ausgab
 	for(uint32_t i = 0; i < temp.size(); i++)
 		if(temp[i] == ',')
 			columns++;
+
+
 	// ===============================
 	// Überprüfen, ob Multiplikation möglich
 	// ===============================
@@ -449,30 +450,63 @@ double math::rechner::matrix_determinante(math::string matrix, const bool ausgab
 		}
 	}
 	
+	// Check if one column or row is 0
+	for (uint16_t i = 0; i < rows; i++) {
+		bool zero_line = true;
+		for (uint16_t j = 0; j < columns; j++) {
+			if(erg[i][j] > 1e-8  || erg[i][j] < -1e-8) {
+				zero_line = false;
+				break;
+			}
+		}
+		if (zero_line) {
+			if(ausgabe == 1)
+				std::cout << "Die Determinante der Matrix ist: 0.0"<< std::endl;
+			return 0.0;
+		}
+	}
+	
+	for (uint16_t j = 0; j < columns; j++) {
+		bool zero_line = true;
+		for (uint16_t i = 0; i < rows; i++) {
+			if(erg[i][j] > 1e-8 || erg[i][j] < -1e-8) {
+				zero_line = false;
+				break;
+			}
+		}
+		if (zero_line) {
+			if(ausgabe == 1)
+				std::cout << "Die Determinante der Matrix ist: 0.0"<< std::endl;
+			return 0.0;
+		}
+	}
+	
 	// =================
 	// Gauß-Algorithmus:
 	// =================
-	// Alle Zeilen durchgehen und dabei Einträge vor [n][n] ignorieren, da alle =0
+	// Alle Zeilen durchgehen und dabei Einträge von [n][n] ignorieren, da alle =0
 	for(uint32_t n = 0; n < rows; n++) {
-
 		// Eine Zeilenberechnung:
 		for(uint32_t i = n; i < rows-1; i++) {
-			
+
 			// Vertauschen von zwei Zeilen, damit nicht durch 0 geteilt wird
-			if(erg[n][n] == 0) {
-				
+			if(erg[n][n] == 0.0) {
 				int m = n+1;
 				determinante = determinante * (-1);
 				do {
+					// start from the start if m bigger than rows
+					if (m >= (int) rows)
+						m = 0;
+
 					// Vertauschen durchführen, falls Bedingung stimmt:
-					if(erg[m][n] != 0) {
+					if(abs(erg[m][n]) > 1e-50) {
 						for(uint32_t m1 = 0; m1 < columns; m1++) {
 							std::swap(erg[n][m1],erg[m][m1]);
 						}
 					}
 					else
 						m++;
-				} while(erg[n][n] == 0);
+				} while(abs(erg[n][n]) < 1e-50);
 			}
 			
 			// Kleiner als ein Schwellwert: Zahl eigentlich 0
@@ -487,41 +521,11 @@ double math::rechner::matrix_determinante(math::string matrix, const bool ausgab
 					return 0;
 				}
 			}
-				
 			double faktor = erg[i+1][n]/erg[n][n];
 			
 			for(uint32_t j = 0; j < columns; j++) {
 				erg[i+1][j] = erg[i+1][j]-(faktor*erg[n][j]);
 			}
-			
-			// Einzelne Berechnungen ausgeben
-//#define Berechnung_Print
-#ifdef Berechnung_Print
-				ergebnis = "";
-				for(uint32_t i = 0; i < rows; i++) {
-					ergebnis += "[";
-					for(uint32_t j = 0; j < columns; j++) {
-							// Korrektur von std::to_string, da dies min. 8 Nachkommastellen anhängt
-						temp = erg[i][j];
-						while(temp[temp.size()-1] == '0')
-							temp = temp.sub(0,temp.size()-2);
-				
-						// Korrektur, wenn eine ganze Zahl vorhanden
-						if(temp[temp.size()-1]== '.')
-							temp = temp.sub(0,temp.size()-2);
-						
-						ergebnis += temp;
-						if(j < columns-1)
-							ergebnis += ",";
-						
-					}
-					ergebnis += "],";
-				}
-				ergebnis = ergebnis.substr(0,ergebnis.size()-2) + "]";
-				std::cout << "Berechnung: Zeile " << i <<" mit Faktor " << faktor <<  ": " << i << "-" << faktor << "*" << n << std::endl;
-				matrix_print(ergebnis);
-				std::cout << std::endl;
-#endif
 		}
 	}
 			
@@ -870,27 +874,29 @@ void math::rechner::matrix_print(math::string matrix) {
 		}
 	}
 	
+	// Anzahl Stellen der grössten Zahl bestimmen
+	uint32_t digit = 1;
+	for(uint32_t i = 0; i < rows; i++) {
+		for(uint32_t n = 0; n < rows; n++) {
+			if(math::functions::digits(mat[n][i]) > digit) {
+				digit = math::functions::digits(mat[n][i]);
+			}
+		}
+	}
+
 	// ========
 	// Ausgabe:
 	// ========
 	for(uint32_t i = 0; i < rows; i++) {
 		std::cout << " | ";
 		for(uint32_t j = 0; j < columns; j++) {
-			
 			// Korrektur damit nicht -0 ausgegeben wird
 			if(mat[i][j] == -0)
 				mat[i][j] = 0;
-			
-			// Anzahl Stellen der grössten Zahl bestimmen
-			uint32_t digit = 1;
-			for(uint32_t n = 0; n < rows; n++) {
-				if(math::functions::digits(mat[n][j]) > digit) {
-					digit = math::functions::digits(mat[n][j]);
-				}
-			}
+
 			for(uint32_t n = math::functions::digits(mat[i][j]); n <= digit; n++)
 				std::cout << " ";
-			
+				
 			std::cout << mat[i][j] << " ";
 		}
 		std::cout << "|" << std::endl;
@@ -1107,7 +1113,3 @@ math::string math::rechner::matrix_transposed(math::string matrix, bool ausgabe)
 	return ergebnis;
 	
 }
-
-
-
-

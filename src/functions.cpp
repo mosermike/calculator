@@ -454,10 +454,6 @@ math::string math::rechner::replace(math::shell::arg args, math::string equation
 std::size_t math::functions::digits(double number){
 	math::string temp = math::to_string(number);
 	
-	// Korrektur von std::to_string, da dies min. 8 Nachkommastellen anhängt
-	while(temp[temp.size()-1] == '0')
-		temp = temp.sub(0,temp.size()-2);
-	
 	// Korrektur, wenn eine ganze Zahl vorhanden
 	if(temp[temp.size()-1]== '.')
 		temp = temp.sub(0,temp.size()-2);

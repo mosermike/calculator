@@ -9,11 +9,11 @@ PROJECT = calc
 
 GCC = /usr/bin/g++
 
-STD = c++20
+std = c++20
 
 DVARS = -D_rechner_log=\"$(PWD)/.calc.log\"
 
-CFLAGS += -Wall -O2 -pipe -Weffc++ -flto=4 -std=$(STD)
+CFLAGS += -Wall -O2 -pipe -Weffc++ -flto=4 -std=$(std)
 
 CFLAGS_GDB = -Wall -Weffc++ -O0 -ggdb #-Werror
 
@@ -21,7 +21,7 @@ INCLUDE += -I./include -I./src #-I./math -I./math1
 
 LDFLAGS =
 
-INSTALL = 
+install = ./
 
 SRC = $(wildcard ./src/*.cpp *.cpp )
 OBJ = $(SRC:%.cpp=%.o)
@@ -40,19 +40,16 @@ clean:
 
 
 install: $(OBJ)
-	$(GCC) $(OBJ) $(CFLAGS) $(INCLUDE) $(LIBRARY) $(LDFLAGS) -o $(INSTALL)/$(PROJECT)
+	$(GCC) $(OBJ) $(CFLAGS) $(INCLUDE) $(LIBRARY) $(LDFLAGS) -o $(install)$(PROJECT)
 
 uninstall:
-	
-	@echo "| Delete $(OBJ) $(INSTALL)"
-	
-	rm $(OBJ) $(INSTALL)
-	
+	rm $(OBJ) $(install)$(PROJECT)
+
 debug: $(DST)
 
 %.o: %.cpp
 	$(GCC) $(DVARS) $(INCLUDE) $(CFLAGS) -c -o $@ $<
-	
+
 %.x: $(OBJ)
 	$(GCC) $(OBJ) $(CFLAGS) $(INCLUDE) $(LIBRARY) $(LDFLAGS) -o $(DST)
-	
+
