@@ -461,7 +461,7 @@ double math::rechner::matrix_determinante(math::string matrix, const bool ausgab
 		}
 		if (zero_line) {
 			if(ausgabe == 1)
-				std::cout << "Die Determinante der Matrix ist: 0.0"<< std::endl;
+				std::cout << "Die Determinante der Matrix ist: 0"<< std::endl;
 			return 0.0;
 		}
 	}
@@ -476,7 +476,7 @@ double math::rechner::matrix_determinante(math::string matrix, const bool ausgab
 		}
 		if (zero_line) {
 			if(ausgabe == 1)
-				std::cout << "Die Determinante der Matrix ist: 0.0"<< std::endl;
+				std::cout << "Die Determinante der Matrix ist: 0"<< std::endl;
 			return 0.0;
 		}
 	}
@@ -875,11 +875,11 @@ void math::rechner::matrix_print(math::string matrix) {
 	}
 	
 	// Anzahl Stellen der grössten Zahl bestimmen
-	uint32_t digit = 1;
-	for(uint32_t i = 0; i < rows; i++) {
+	uint32_t digit[columns] = {0};
+	for(uint32_t i = 0; i < columns; i++) {
 		for(uint32_t n = 0; n < rows; n++) {
-			if(math::functions::digits(mat[n][i]) > digit) {
-				digit = math::functions::digits(mat[n][i]);
+			if(math::functions::digits(mat[n][i]) > digit[i]) {
+				digit[i] = math::functions::digits(mat[n][i]);
 			}
 		}
 	}
@@ -887,20 +887,33 @@ void math::rechner::matrix_print(math::string matrix) {
 	// ========
 	// Ausgabe:
 	// ========
+	std::cout << " ╭";
+	uint32_t num_space = 0; // Number of spaces in each column
+	for (uint32_t i = 0; i < columns; i++)
+		num_space += digit[i]+1;
+	for (uint32_t i = 0; i < num_space; i++)
+		std::cout << " ";
+        std::cout << " ╮" << std::endl;
 	for(uint32_t i = 0; i < rows; i++) {
-		std::cout << " | ";
+		std::cout << " │";
+		
 		for(uint32_t j = 0; j < columns; j++) {
 			// Korrektur damit nicht -0 ausgegeben wird
 			if(mat[i][j] == -0)
 				mat[i][j] = 0;
 
-			for(uint32_t n = math::functions::digits(mat[i][j]); n <= digit; n++)
+			for(uint32_t n = math::functions::digits(mat[i][j]); n <= digit[j]; n++)
 				std::cout << " ";
 				
-			std::cout << mat[i][j] << " ";
+			std::cout << mat[i][j];
 		}
-		std::cout << "|" << std::endl;
+		std::cout << " │" << std::endl;	
 	}
+	std::cout << " ╰";
+	for (uint32_t i = 0; i < num_space; i++)
+		std::cout << " ";
+	std::cout <<  " ╯" << std::endl;
+
 	return;
 	
 }
