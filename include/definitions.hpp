@@ -25,7 +25,7 @@
 #define _d_sec
 // Logdateien
 #ifndef _rechner_log 
-#define _rechner_log 		"~/.calc.log"
+#define _rechner_log 		"/tmp/.calc.log"
 #endif
 
 #endif

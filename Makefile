@@ -11,6 +11,8 @@ GCC = /usr/bin/g++
 
 STD = c++20
 
+DVARS = -D_rechner_log=\"$(PWD)/.calc.log\"
+
 CFLAGS += -Wall -O2 -pipe -Weffc++ -flto=4 -std=$(STD)
 
 CFLAGS_GDB = -Wall -Weffc++ -O0 -ggdb #-Werror
@@ -31,7 +33,7 @@ target debug   : override CFLAGS = $(CFLAGS_GDB)
 
 all: $(DST)
 	@cat $(SRC) $(HDR) | grep TODO | wc -l > $(TODOFILE)
-	@echo "\e[1;32m| Only $(shell cat ${TODOFILE}) TODOs! \e[0m"
+	@echo -e "\e[1;32m| Only $(shell cat ${TODOFILE}) TODOs! \e[0m"
 
 clean:
 	rm $(OBJ) $(DST)
@@ -49,7 +51,7 @@ uninstall:
 debug: $(DST)
 
 %.o: %.cpp
-	$(GCC) $(INCLUDE) $(CFLAGS) -c -o $@ $<
+	$(GCC) $(DVARS) $(INCLUDE) $(CFLAGS) -c -o $@ $<
 	
 %.x: $(OBJ)
 	$(GCC) $(OBJ) $(CFLAGS) $(INCLUDE) $(LIBRARY) $(LDFLAGS) -o $(DST)

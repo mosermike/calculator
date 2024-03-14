@@ -47,7 +47,7 @@ namespace math{
 					output.open(logpath.c_str(),std::ios::out | std::ios::app);
 					header();
 					if(!math::Unix::exist(logpath.str()))
-						math::shell::error("[LOG] Erstellung der Logdatei nicht möglich. Berechtigung prüfen!");
+						math::shell::error("[LOG] Not possible to create the file " + logpath.str() + ". Check permissions!");
 				}
 				else
 					output.open(logpath.c_str(),std::ios::out | std::ios::app);
