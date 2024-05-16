@@ -9,7 +9,7 @@ GCC = /usr/bin/g++
 std = c++20
 
 # Location where the log file is saved (in general in this directory to make sure that permissions are correct)
-DVARS = -Drechner_log=\"$(PWD)/calc.log\"
+DVARS = -Dcalc_log=\"$(PWD)/calc.log\"
 
 CFLAGS += -Wall -O2 -pipe -Weffc++ -flto=4 -std=$(std)
 
@@ -19,7 +19,7 @@ INCLUDE += -I./include -I./src
 
 DST = calc.x
 
-LIBRARY = -lmml -lmml-math
+LIBRARY = -lmml-math -lmml
 
 INSTALL_DIR = /usr/local/bin
 
@@ -32,14 +32,14 @@ target debug   : override CFLAGS = $(CFLAGS_GDB)
 all: $(DST)
 
 clean:
-	rm $(OBJ) $(DST)/calc.x
+	rm $(OBJ) $(INSTALL_DIR)/$(DST)
 
 
 install: $(OBJ)
 	$(GCC) $(OBJ) $(CFLAGS) $(INCLUDE) $(LIBRARY) $(LDFLAGS) -o $(INSTALL_DIR)/$(PROJECT)
 
 uninstall:
-	rm $(OBJ) $(DST)/$(PROJECT)
+	rm $(OBJ) $(ISNTALL_DIR)/$(PROJECT)
 
 debug: $(DST)
 
