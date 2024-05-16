@@ -5,7 +5,7 @@
  * : @name rechner
  * : @file rechner.cpp
  * : 
- * : Version History:
+ * : Versionsverlauf:
  * : @version  3.0.4 (07.01.2024) Fixed some bugs
  * : @version  3.0.3 (27.01.2023) Determinantenberechnung korrigiert; Korrektur, wenn eine Matrix ohne Anfangs- bzw. Endklammer übergeben wird.
  * : @version  3.0.2 (06.09.2022) Atomare Masseneinheit hinzugefügt, logb todo gelöscht => einfach als log(x)/log(b) berechnen, Log Datei nur 0 löschen nach dem Komma
@@ -25,7 +25,7 @@
  * : @version  2.0   (22.02.2019) Funktion replace und add_oldresult, sqrt integriert, ^ integriert, si-präfixe, mehrere Variablen verwenden; log, ln, log2, logb, exp, sin, cos, tan integriert,
  * : 							  calculate erstellt, -t hinzugefügt
  * : @version  1.6   (17.02.2019) e Funktion hinzugefügt, exponentenfunktion durch pow ersetzt, if Bedingungen für pi und ki hinzugefügt
- * : @version  1.5   (10.12.2018) Pi Funktion hinzugefügt für basic_operations, sowie Verbesserungen von -s und -m, Übernahme der alten Werte, Variable x verwenden, math::string integriert
+ * : @version  1.5   (10.12.2018) Pi Funktion hinzugefügt für basic_operations, sowie Verbesserungen von -s und -m, Übernahme der alten Werte, Variable x verwenden, mml::string integriert
  * : @version  1.4   (09.11.2018) basic_operations.hpp erstellt mit -s und -m
  * : @version  1.3   (01.11.2018) Grenzen angepasst, die erlaubt sind. Hat bei der Multiplikation 9 nicht erlaubt
  * : @version  1.2   (15.10.2018) Neue Funktion rechnen mit Exponenten zur Basis, Hilfeseite nach Muster, uintX_t angepasst
@@ -44,7 +44,12 @@
 #include <string>
 #include <fstream>
 #include <iomanip>	// setprecision
-#include "../include/math.hpp"
+#include <mml.hpp>
+#include <mml-math.hpp>
+
+#ifndef rechner_log
+#define rechner_log 		"/tmp/rechner.log"
+#endif
 
 // NOTE Rechner
 // TODO Bruchform ausgeben
@@ -63,39 +68,44 @@
 
 int main(int argc, char **argv) {
 	
-	math::shell::arg		args		(argc,argv);
-	math::Timer			time		;
+	mml::shell::arg		args		(argc,argv);
+	mml::Timer			time		;
 	double				result		= 0;
-	math::string			matrix		= "";
+	mml::string			matrix		= "";
 	
 	if(args.notArg("-t","--timer"))
 		time.stop();
 		
 	if(args.size() == 1){
 	
-		math::shell::letter("red");
+		mml::shell::letter("red");
 		std::cout << "Fehlende Eingabe der gewünschten Operation!" << std::endl;
-		math::shell::normal();
+		mml::shell::normal();
 		
-		math::help::rechner();
+		mml::help::help("rechner");
 		
 		return 1;
 	}
 	
 	else if (args.findArg("--help","-h"))
-		math::help::rechner();
+		mml::help::help("rechner");
 	
 	else if ((args.findArg("-c","--calculate") /*|| args.findArg("-s","--summation")*/ || args.findArg("-m","--matrix")) && args.size() == 2) {
-		math::shell::warn("Fehlende Eingabe!");
+		mml::shell::warn("Fehlende Eingabe!");
 	}
 	
 	else if (args.findArg("-c","--calculate")) {
-		result = math::rechner::calculate(args,args[args.positionArg("-c") + 1], true);
-        math::rechner::save_result(args, args[args.positionArg("-c","--calculate") + 1],result);
+		result = mml::rechner::calculate(args,args[args.positionArg("-c") + 1], true);
+        mml::rechner::save_result(args, args[args.positionArg("-c","--calculate") + 1],result,rechner_log);
     }
 	
 	else if (args.findArg("-cs","--calculations")) {
-		math::rechner::calculations(args);
+		std::vector<mml::string> equations;
+		std::vector<double> results = mml::rechner::calculations(args, equations);
+		
+		// Save the results and equations
+		for(uint32_t i = 0; i < equations.size(); i++)
+			mml::rechner::save_result(args, equations[i], results[i],rechner_log);
 	}
 	else if(args.findArg("-m","--matrix")) {
 
@@ -103,8 +113,8 @@ int main(int argc, char **argv) {
 		 * NOTE Transform from latex matric to compatible format
 		 */
 		if(args.findArg("-ml","--matrix-latex")) {
-			math::string temp = args[args.positionArg("-m","--matrix") + 1]; // Line with the matrix calculations
-			math::string temp_s = ""; // string to build the new calculations line
+			mml::string temp = args[args.positionArg("-m","--matrix") + 1]; // Line with the matrix calculations
+			mml::string temp_s = ""; // string to build the new calculations line
 			bool braket = false;	// to indicate whether the matrix is finished or starts
 			// Build string in compatible format:
 			for(uint32_t i = 0; i < temp.size();i++) {
@@ -129,25 +139,27 @@ int main(int argc, char **argv) {
 		args[args.positionArg("-m","--matrix") + 1] = args[args.positionArg("-m","--matrix") + 1].replace(" ",""); // Leerzeichen ersetzen, aber Achtung Matrix falsch wenn nicht mit " "
 		
 		if (args.findArg("-a","--adjunct"))
-			matrix = math::rechner::matrix_adjunct(args[args.positionArg("-m","--matrix") + 1],true);
+			matrix = mml::rechner::matrix_adjunct(args[args.positionArg("-m","--matrix") + 1],true);
 		else if (args.exist("-d","--det")) 
-			matrix = "det(" + args[args.positionArg("-m","--matrix")+1].str() + ") = " + std::to_string(math::rechner::matrix_determinante(args[args.positionArg("-m","--matrix") + 1],true));
+			matrix = "det(" + args[args.positionArg("-m","--matrix")+1].str() + ") = " + std::to_string(mml::rechner::matrix_determinante(args[args.positionArg("-m","--matrix") + 1],true));
 		else if (args.findArg("-i","--inverse"))
-			matrix = math::rechner::matrix_inverse(args[args.positionArg("-m","--matrix") + 1],true);
+			matrix = mml::rechner::matrix_inverse(args[args.positionArg("-m","--matrix") + 1],true);
 		else if (args.findArg("-tr","--transpose"))
-			matrix = math::rechner::matrix_transposed(args[args.positionArg("-m","--matrix") + 1],true);
-		else
-			matrix = math::rechner::matrix_calculation(args, args[args.positionArg("-m","--matrix") + 1]);
+			matrix = mml::rechner::matrix_transposed(args[args.positionArg("-m","--matrix") + 1],true);
+		else {
+			matrix = mml::rechner::matrix_calculation(args, args[args.positionArg("-m","--matrix") + 1]);
+			mml::rechner::save_matrix(args, args[args.positionArg("-m","--matrix") + 1], matrix,rechner_log);
+		}
 	}
 	else if (args.findArg("-s","--summation")){
-		math::vector<double> values = math::rechner::add(args);
+		mml::vector<double> values = mml::rechner::add(args);
 		result = values.sum();
-		values.log(_rechner_log, false, "[summation] ", " = " + std::to_string(result));
+		values.log(rechner_log, false, "[summation] ", " = " + std::to_string(result));
 	}
 	else if (args.findArg("-l","--log","-lv")) {
-		if(math::Unix::exist(_rechner_log)) {
+		if(mml::Unix::exist(rechner_log)) {
 			
-			math::log log(_rechner_log);
+			mml::log log(rechner_log);
 			log.print(args.exist("-v","--verbose","-lv"));
 		}
 		else
@@ -156,17 +168,17 @@ int main(int argc, char **argv) {
 		
 	}
 	else if(args.findArg("-lr", "log_reset")) {
-		math::rechner::reset_logfile(args);
+		mml::rechner::reset_logfile(args,rechner_log);
 		return 0;
 	}
 	
 	else if(args.findArg("-lb","--log-backup")) {
-		math::rechner::backup_logfile(args);
+		mml::rechner::backup_logfile(args, rechner_log);
 		return 0;
 	}
 	else {
-		result = math::rechner::calculate(args,args[1]);
-        math::rechner::save_result(args, args[1],result);
+		result = mml::rechner::calculate(args,args[1]);
+        mml::rechner::save_result(args, args[1],result,rechner_log);
     }
 	
 	if ((args.findArg("-c","--calculate") || args.findArg("-s", "--summation") || args.exist("+", "-", "*", "/")) && !args.findArg("-cs", "--calculations") && args.notArg("-m","--matrix")) {
