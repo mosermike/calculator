@@ -10,8 +10,8 @@ make
 '''
 
 Note that the two libraries mml and mml-math are needed and can be installed her
-- libmml : (github)[https://github.com/mosermike/mml], (gitlab)[https://gitlab.moser.mywire.org/moser/mml]
-- libmml-math : (github)[https://github.com/mosermike/mml-math], (gitlab)[https://gitlab.moser.mywire.org/moser/mml-math]
+- libmml : [github](https://github.com/mosermike/mml), [gitlab](https://gitlab.moser.mywire.org/moser/mml)
+- libmml-math : [github](https://github.com/mosermike/mml-math), [gitlab](https://gitlab.moser.mywire.org/moser/mml-math)
 If you want to install the executing script somewhere, execute
 '''
 make install DST=[path to installation directory]
