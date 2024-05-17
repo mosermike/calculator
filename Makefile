@@ -32,7 +32,7 @@ target debug   : override CFLAGS = $(CFLAGS_GDB)
 all: $(DST)
 
 clean:
-	rm $(OBJ) $(INSTALL_DIR)/$(DST)
+	rm $(OBJ) $(DST)
 
 
 install: $(OBJ)
